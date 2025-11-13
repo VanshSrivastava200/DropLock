@@ -99,6 +99,7 @@ router.get('/my-documents', protect, async (req, res) => {
       count: documents.length,
       documents: documents.map(doc => ({
         id: doc._id,
+        status : doc.status,
         documentType: doc.documentType,
         fileName: doc.fileName,
         fileSize: doc.fileSize,

@@ -34,7 +34,7 @@ const DocumentList = ({ user, refresh }) => {
       try {
         const result = await documentService.deleteDocument(documentId);
         if (result.success) {
-          setDocuments(documents.filter(doc => doc._id !== documentId));
+          setDocuments(documents.filter(doc => doc.id !== documentId));
         } else {
           setError(result.error);
         }
@@ -158,89 +158,123 @@ const DocumentList = ({ user, refresh }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredDocuments.map((document, index) => (
-                <tr key={document._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 bg-${getFileIconColor(index)}-50 rounded-lg flex items-center justify-center flex-shrink-0`}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={`text-${getFileIconColor(index)}-600`}>
-                          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-                          <polyline points="14 2 14 8 20 8"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 capitalize">{document.documentType}</div>
-                        <div className="text-xs text-gray-500">{document.fileName}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {document.description || 'No description'}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <code className="text-xs text-gray-900 bg-gray-100 px-2 py-1 rounded border border-gray-200 font-mono">
-                        {document.ipfsHash?.substring(0, 8)}...{document.ipfsHash?.substring(document.ipfsHash.length - 4)}
-                      </code>
-                      <button
-                        onClick={() => handleCopyCID(document.ipfsHash)}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
-                        title="Copy CID"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {new Date(document.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {formatFileSize(document.fileSize)}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <a
-                        href={document.ipfsURL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center w-8 h-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
-                        title="View"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                          <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                      </a>
-                      <a
-                        href={document.ipfsURL}
-                        download
-                        className="inline-flex items-center justify-center w-8 h-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
-                        title="Download"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                          <polyline points="7 10 12 15 17 10"/>
-                          <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                      </a>
-                      <button
-                        onClick={() => handleDelete(document._id)}
-                        className="inline-flex items-center justify-center w-8 h-8 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                        title="Delete"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <polyline points="3 6 5 6 21 6"/>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {filteredDocuments.map((document, index) => (
+    <tr key={document.id} className="hover:bg-gray-50 transition-colors">
+      <td className="px-6 py-4">
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 bg-${getFileIconColor(index)}-50 rounded-lg flex items-center justify-center flex-shrink-0`}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={`text-${getFileIconColor(index)}-600`}>
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="text-sm font-medium text-gray-900 capitalize truncate">
+                {document.documentType}
+              </div>
+              <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                document.status === 'verified' ? 'bg-green-100 text-green-800 border border-green-200' :
+                document.status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                document.status === 'rejected' ? 'bg-red-100 text-red-800 border border-red-200' :
+                document.status === 'processing' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                'bg-gray-100 text-gray-800 border border-gray-200'
+              }`}>
+                {/* Status icons */}
+                {document.status === 'verified' && (
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                  </svg>
+                )}
+                {document.status === 'pending' && (
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+                  </svg>
+                )}
+                {document.status === 'rejected' && (
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/>
+                  </svg>
+                )}
+                {document.status === 'processing' && (
+                  <svg className="w-3 h-3 mr-1 animate-spin" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd"/>
+                  </svg>
+                )}
+                {document.status?.charAt(0).toUpperCase() + document.status?.slice(1)}
+              </div>
+            </div>
+            <div className="text-xs text-gray-500 truncate">{document.fileName}</div>
+          </div>
+        </div>
+      </td>
+      <td className="px-6 py-4 text-sm text-gray-600">
+        {document.description || 'No description'}
+      </td>
+      <td className="px-6 py-4">
+        <div className="flex items-center gap-2">
+          <code className="text-xs text-gray-900 bg-gray-100 px-2 py-1 rounded border border-gray-200 font-mono">
+            {document.ipfsHash?.substring(0, 8)}...{document.ipfsHash?.substring(document.ipfsHash.length - 4)}
+          </code>
+          <button
+            onClick={() => handleCopyCID(document.ipfsHash)}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            title="Copy CID"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>
+      </td>
+      <td className="px-6 py-4 text-sm text-gray-600">
+        {new Date(document.createdAt).toLocaleDateString()}
+      </td>
+      <td className="px-6 py-4 text-sm text-gray-600">
+        {formatFileSize(document.fileSize)}
+      </td>
+      <td className="px-6 py-4">
+        <div className="flex items-center justify-end gap-2">
+          <a
+            href={document.ipfsURL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center w-8 h-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
+            title="View"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </a>
+          <a
+            href={document.ipfsURL}
+            download
+            className="inline-flex items-center justify-center w-8 h-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
+            title="Download"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </a>
+          <button
+            onClick={() => handleDelete(document._id)}
+            className="inline-flex items-center justify-center w-8 h-8 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+            title="Delete"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
           </table>
         </div>
 
