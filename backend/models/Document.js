@@ -13,7 +13,8 @@ const documentSchema = new mongoose.Schema({
   documentType: {
     type: String,
     required: [true, 'Document type is required'],
-    enum: ['aadhar', 'pan', 'license', 'passport', 'degree', 'other']
+    enum: ['aadhar', 'pan', 'birth','voter','certificate','license', 'passport', 'degree', 'other'],
+    default: 'other'
   },
   fileName: {
     type: String,
