@@ -139,7 +139,7 @@ const DocumentUpload = ({ user, onUploadSuccess }) => {
         <button
           type="submit"
           disabled={uploading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2  disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           {uploading ? 'Uploading to IPFS...' : 'Upload Document'}
         </button>
