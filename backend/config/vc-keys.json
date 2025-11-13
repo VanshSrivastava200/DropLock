@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2025-11-13T20:45:14.922Z",
+  "vc": {
+    "privateKey": {
+      "kty": "EC",
+      "kid": "vc-key-1763066714402",
+      "use": "sig",
+      "alg": "ES256",
+      "crv": "P-256",
+      "x": "O5DfkNJrIDRRP9DsVnjnwYSGtGdC_v4tPu5XgCuQdPE",
+      "y": "CiVQPgmdBOq46tqAib1TI0q-D765iYph0iXxJT8yru8",
+      "d": "PTWjlyD265Q1z_prNruSftjVnEDj1HZ3zYqlExjS4DU"
+    },
+    "publicKey": {
+      "kty": "EC",
+      "kid": "vc-key-1763066714402",
+      "use": "sig",
+      "alg": "ES256",
+      "crv": "P-256",
+      "x": "O5DfkNJrIDRRP9DsVnjnwYSGtGdC_v4tPu5XgCuQdPE",
+      "y": "CiVQPgmdBOq46tqAib1TI0q-D765iYph0iXxJT8yru8"
+    },
+    "kid": "vc-key-1763066714402"
+  },
+  "ethereum": {
+    "address": "0xd92C3Fc228cDEB73C3450BE327CdbdDf33735a38",
+    "privateKey": "0xa7d3dd4d4e90e3d271d3dc03f7720bb282e57dce2b0c2a5b74dd99d32a7ceb1e",
+    "publicKey": "0x035ec73f92f74018180856a438bd1c9cb014038d0597f760e2e6b7295116ca0f93"
+  },
+  "environmentVariables": {
+    "VC_SIGNING_PRIVATE_KEY": "{\"kty\":\"EC\",\"kid\":\"vc-key-1763066714402\",\"use\":\"sig\",\"alg\":\"ES256\",\"crv\":\"P-256\",\"x\":\"O5DfkNJrIDRRP9DsVnjnwYSGtGdC_v4tPu5XgCuQdPE\",\"y\":\"CiVQPgmdBOq46tqAib1TI0q-D765iYph0iXxJT8yru8\",\"d\":\"PTWjlyD265Q1z_prNruSftjVnEDj1HZ3zYqlExjS4DU\"}",
+    "VC_SIGNING_PUBLIC_KEY": "{\"kty\":\"EC\",\"kid\":\"vc-key-1763066714402\",\"use\":\"sig\",\"alg\":\"ES256\",\"crv\":\"P-256\",\"x\":\"O5DfkNJrIDRRP9DsVnjnwYSGtGdC_v4tPu5XgCuQdPE\",\"y\":\"CiVQPgmdBOq46tqAib1TI0q-D765iYph0iXxJT8yru8\"}",
+    "ETH_SIGNING_PRIVATE_KEY": "0xa7d3dd4d4e90e3d271d3dc03f7720bb282e57dce2b0c2a5b74dd99d32a7ceb1e"
+  }
+}

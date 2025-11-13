@@ -86,7 +86,7 @@ const PortalSelection = ({ onSelectPortal }) => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8">
         <div>
-          <h1 className="text-3xl font-bold text-center text-gray-900">DigiLocker</h1>
+          <h1 className="text-3xl font-bold text-center text-gray-900">DropLock</h1>
           <p className="mt-2 text-center text-gray-600">Choose your portal</p>
         </div>
         

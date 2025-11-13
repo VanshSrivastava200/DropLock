@@ -10,7 +10,7 @@ const Header = ({ user, onLogout }) => {
               <span className="text-white font-semibold text-sm tracking-tighter">DL</span>
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Decentralized DigiLocker</h1>
+              <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Decentralized DropLock</h1>
               <p className="text-sm text-gray-500 mt-0.5">Secure document storage on IPFS</p>
             </div>
           </div>

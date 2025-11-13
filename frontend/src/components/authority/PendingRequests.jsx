@@ -158,7 +158,7 @@ const PendingRequests = ({ authority }) => {
                 </div>
                 <div>
                   <div className="text-xs text-gray-500 mb-1">User DID</div>
-                  <div className="font-mono text-xs text-gray-900">{request.user?.did || 'did:digilocker:x7k9'}</div>
+                  <div className="font-mono text-xs text-gray-900">{request.user?.did || 'did:dropLock:x7k9'}</div>
                 </div>
                 <div>
                   <div className="text-xs text-gray-500 mb-1">Uploaded Date</div>

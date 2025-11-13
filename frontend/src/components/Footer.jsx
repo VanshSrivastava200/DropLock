@@ -10,7 +10,7 @@ const Footer = () => {
           <a href="#" className="hover:text-gray-900 transition-colors">Documentation</a>
         </div>
         <div className="text-sm text-gray-500">
-          © 2024 Decentralized DigiLocker. Built on IPFS.
+          © 2024 Decentralized DropLock. Built on IPFS.
         </div>
       </div>
     </footer>
