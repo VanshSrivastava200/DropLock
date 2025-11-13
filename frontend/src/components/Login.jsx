@@ -2,16 +2,14 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
-  const [isEmailLogin, setIsEmailLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    walletAddress: ''
+    password: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const { emailLogin, walletLogin } = useAuth();
+  const { emailLogin } = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,10 +20,16 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
     setError('');
   };
 
-  const handleEmailLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
+      return;
+    }
+
+    // Email validation
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setError('Please enter a valid email address');
       return;
     }
 
@@ -50,160 +54,133 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
     }
   };
 
-  const handleWalletLogin = async (e) => {
-    e.preventDefault();
-    if (!formData.walletAddress) {
-      setError('Please enter your wallet address');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const result = await walletLogin({
-        walletAddress: formData.walletAddress
-      });
-
-      if (result.success) {
-        onLoginSuccess(result.user);
-      } else {
-        setError(result.error);
-      }
-    } catch (err) {
-      setError('Wallet login failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to DigiLocker
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Secure document storage on blockchain
-          </p>
+    <div className="min-h-[calc(100vh-73px)] flex items-center justify-center px-6 py-12 bg-white">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Welcome back</h1>
+          <p className="text-sm text-gray-600">Sign in to your DigiLocker account</p>
         </div>
 
-        <div className="flex rounded-md shadow-sm">
-          <button
-            type="button"
-            onClick={() => setIsEmailLogin(true)}
-            className={`flex-1 py-2 px-4 text-sm font-medium rounded-l-md ${
-              isEmailLogin
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Email Login
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsEmailLogin(false)}
-            className={`flex-1 py-2 px-4 text-sm font-medium rounded-r-md ${
-              !isEmailLogin
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Wallet Login
-          </button>
-        </div>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
-            {error}
-          </div>
-        )}
-
-        {isEmailLogin ? (
-          <form className="mt-8 space-y-6" onSubmit={handleEmailLogin}>
+        <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="loginEmail" className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={handleInputChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your email"
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  id="loginEmail"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="john@example.com"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-md text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all hover:border-gray-400"
+                  required
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="loginPassword" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={handleInputChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your password"
-              />
+              <div className="relative">
+                <input
+                  type="password"
+                  id="loginPassword"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Enter your password"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-md text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all hover:border-gray-400"
+                  required
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <circle cx="12" cy="16" r="1"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Signing in...' : 'Sign in with Email'}
-              </button>
-            </div>
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-3 flex items-start space-x-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-red-600 flex-shrink-0">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gray-900 text-white py-2.5 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                  </svg>
+                  Signing in...
+                </div>
+              ) : (
+                'Sign in'
+              )}
+            </button>
           </form>
-        ) : (
-          <form className="mt-8 space-y-6" onSubmit={handleWalletLogin}>
-            <div>
-              <label htmlFor="walletAddress" className="block text-sm font-medium text-gray-700">
-                Wallet Address
-              </label>
-              <input
-                id="walletAddress"
-                name="walletAddress"
-                type="text"
-                required
-                value={formData.walletAddress}
-                onChange={handleInputChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm font-mono text-sm"
-                placeholder="0x742E4C2F5D4A5C6B7D8E9F0A1B2C3D4E5F6A7B8C9"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Enter your Ethereum wallet address (starts with 0x)
-              </p>
-            </div>
 
-            <div>
+          <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
               <button
-                type="submit"
-                disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                type="button"
+                onClick={onSwitchToRegister}
+                className="text-gray-900 font-medium hover:underline"
               >
-                {loading ? 'Connecting...' : 'Connect Wallet'}
+                Sign up
               </button>
-            </div>
-          </form>
-        )}
+            </p>
+          </div>
+        </div>
 
-        <div className="text-center">
-          <button
-            onClick={onSwitchToRegister}
-            className="text-blue-600 hover:text-blue-500 text-sm font-medium"
-          >
-            Don't have an account? Sign up
-          </button>
+        <div className="mt-8 flex items-center justify-center space-x-6">
+          <div className="flex items-center space-x-2 text-xs text-gray-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Secure authentication</span>
+          </div>
+          <div className="flex items-center space-x-2 text-xs text-gray-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <circle cx="12" cy="16" r="1"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>Encrypted storage</span>
+          </div>
+          <div className="flex items-center space-x-2 text-xs text-gray-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <ellipse cx="12" cy="5" rx="9" ry="3"/>
+              <path d="M21 5c0 1.66-4 3-9 3S3 6.66 3 5"/>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+            </svg>
+            <span>IPFS storage</span>
+          </div>
         </div>
       </div>
     </div>
