@@ -49,10 +49,19 @@ const documentSchema = new mongoose.Schema({
     default: false
   },
   verifiedBy: {
-    type: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Authority'
   },
   verifiedAt: {
     type: Date
+  },
+  verificationHash: {
+    type: String // Hash from authority's original document
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'verified', 'rejected'],
+    default: 'pending'
   },
   metadata: {
     type: Map,
@@ -65,5 +74,8 @@ const documentSchema = new mongoose.Schema({
 documentSchema.index({ user: 1, createdAt: -1 });
 documentSchema.index({ did: 1 });
 documentSchema.index({ ipfsHash: 1 });
+documentSchema.index({ documentType: 1 });
+documentSchema.index({ status: 1 });
+documentSchema.index({ verifiedBy: 1 });
 
 module.exports = mongoose.model('Document', documentSchema);

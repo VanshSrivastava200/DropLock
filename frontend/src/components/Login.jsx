@@ -55,11 +55,15 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-73px)] flex items-center justify-center px-6 py-12 bg-white">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 mb-2 tracking-tight">Welcome back</h1>
-          <p className="text-sm text-gray-600">Sign in to your DigiLocker account</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign in to DropLock
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Secure document storage on blockchain
+          </p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">

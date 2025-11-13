@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuthorityAuth } from '../../contexts/AuthorityAuthContext';
 
-const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
+const AuthorityRegister = ({ onSwitchToLogin, onRegisterSuccess }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
-    username: '',
-    fullName: ''
+    employerId: '',
+    department: '',
+    fullName: '',
+    designation: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const { register } = useAuth();
+  const { register } = useAuthorityAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,7 +28,11 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.email || !formData.password || !formData.username) {
+    // Validation
+    const requiredFields = ['email', 'password', 'employerId', 'department', 'fullName', 'designation'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    
+    if (missingFields.length > 0) {
       setError('Please fill in all required fields');
       return;
     }
@@ -48,12 +54,14 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
       const result = await register({
         email: formData.email,
         password: formData.password,
-        username: formData.username,
-        fullName: formData.fullName
+        employerId: formData.employerId,
+        department: formData.department,
+        fullName: formData.fullName,
+        designation: formData.designation
       });
 
       if (result.success) {
-        onRegisterSuccess(result.user);
+        onRegisterSuccess(result.authority);
       } else {
         setError(result.error);
       }
@@ -69,10 +77,10 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            Authority Registration
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Join DropLock for secure document storage
+            Register as a verification authority
           </p>
         </div>
 
@@ -85,8 +93,24 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                Full Name *
+              </label>
+              <input
+                id="fullName"
+                name="fullName"
+                type="text"
+                required
+                value={formData.fullName}
+                onChange={handleInputChange}
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Enter your full name"
+              />
+            </div>
+
+            <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address *
+                Official Email *
               </label>
               <input
                 id="email"
@@ -96,39 +120,62 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                 value={formData.email}
                 onChange={handleInputChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your email"
+                placeholder="Enter your official email"
               />
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Username *
+              <label htmlFor="employerId" className="block text-sm font-medium text-gray-700">
+                Employer ID *
               </label>
               <input
-                id="username"
-                name="username"
+                id="employerId"
+                name="employerId"
                 type="text"
                 required
-                value={formData.username}
+                value={formData.employerId}
                 onChange={handleInputChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Choose a username"
+                placeholder="Enter your employer ID"
               />
             </div>
 
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-                Full Name
+              <label htmlFor="designation" className="block text-sm font-medium text-gray-700">
+                Designation *
               </label>
               <input
-                id="fullName"
-                name="fullName"
+                id="designation"
+                name="designation"
                 type="text"
-                value={formData.fullName}
+                required
+                value={formData.designation}
                 onChange={handleInputChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your full name"
+                placeholder="Enter your designation"
               />
+            </div>
+
+            <div>
+              <label htmlFor="department" className="block text-sm font-medium text-gray-700">
+                Department *
+              </label>
+              <select
+                id="department"
+                name="department"
+                required
+                value={formData.department}
+                onChange={handleInputChange}
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              >
+                <option value="">Select Department</option>
+                <option value="aadhar">Aadhar Department</option>
+                <option value="pan">PAN Department</option>
+                <option value="license">Driving License Department</option>
+                <option value="passport">Passport Department</option>
+                <option value="degree">Education Department</option>
+                <option value="other">Other Department</option>
+              </select>
             </div>
 
             <div>
@@ -171,9 +218,9 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating Account...' : 'Create Account'}
+              {loading ? 'Creating Account...' : 'Register as Authority'}
             </button>
           </div>
         </form>
@@ -181,7 +228,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
         <div className="text-center">
           <button
             onClick={onSwitchToLogin}
-            className="text-blue-600 hover:text-blue-500 text-sm font-medium"
+            className="text-green-600 hover:text-green-500 text-sm font-medium"
           >
             Already have an account? Sign in
           </button>
@@ -191,4 +238,4 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
   );
 };
 
-export default Register;
+export default AuthorityRegister;

@@ -5,6 +5,7 @@ const router = express.Router();
 const Document = require('../models/Document');
 const pinataService = require('../utils/pinataService');
 const { protect } = require('../middleware/auth');
+const { calculateFileHash } = require('../utils/hashUtils');
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -35,14 +36,11 @@ router.post('/upload', protect, upload.single('document'), async (req, res) => {
 
     console.log(`📤 Uploading document: ${file.originalname}`);
 
-    // Calculate file hash
-    const fileHash = crypto.createHash('sha256').update(file.buffer).digest('hex');
+    const fileHash = calculateFileHash(file.buffer);
 
-    // Upload to Pinata
     const pinataResult = await pinataService.uploadToIPFS(file.buffer, file.originalname);
     const ipfsURL = pinataService.getGatewayURL(pinataResult.ipfsHash);
 
-    // Save to database
     const document = await Document.create({
       user: req.user.id,
       did: req.user.did,
@@ -85,27 +83,46 @@ router.post('/upload', protect, upload.single('document'), async (req, res) => {
   }
 });
 
-// Get user documents
+// Get all documents for the current user
 router.get('/my-documents', protect, async (req, res) => {
   try {
-    const documents = await Document.find({ user: req.user.id })
-      .sort({ createdAt: -1 })
-      .select('documentType fileName fileSize fileType ipfsHash ipfsURL isVerified verifiedAt createdAt');
+    console.log(`📋 Fetching documents for user: ${req.user.id}`);
+    
+    const documents = await Document.find({ 
+      user: req.user.id 
+    }).sort({ createdAt: -1 });
 
-    res.json({
+    console.log(`✅ Found ${documents.length} documents for user`);
+
+    res.status(200).json({
       success: true,
       count: documents.length,
-      documents
+      documents: documents.map(doc => ({
+        id: doc._id,
+        documentType: doc.documentType,
+        fileName: doc.fileName,
+        fileSize: doc.fileSize,
+        fileType: doc.fileType,
+        description: doc.description,
+        ipfsHash: doc.ipfsHash,
+        ipfsURL: doc.ipfsURL,
+        documentHash: doc.documentHash,
+        isVerified: doc.isVerified,
+        verifiedBy: doc.verifiedBy,
+        uploadedAt: doc.createdAt,
+        updatedAt: doc.updatedAt
+      }))
     });
   } catch (error) {
+    console.error('❌ Get documents error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch documents'
+      error: 'Failed to fetch documents: ' + error.message
     });
   }
 });
 
-// Get single document
+// Get a specific document by ID
 router.get('/:id', protect, async (req, res) => {
   try {
     const document = await Document.findOne({
@@ -120,22 +137,37 @@ router.get('/:id', protect, async (req, res) => {
       });
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
-      document
+      document: {
+        id: document._id,
+        documentType: document.documentType,
+        fileName: document.fileName,
+        fileSize: document.fileSize,
+        fileType: document.fileType,
+        description: document.description,
+        ipfsHash: document.ipfsHash,
+        ipfsURL: document.ipfsURL,
+        documentHash: document.documentHash,
+        isVerified: document.isVerified,
+        verifiedBy: document.verifiedBy,
+        uploadedAt: document.createdAt,
+        updatedAt: document.updatedAt
+      }
     });
   } catch (error) {
+    console.error('❌ Get document error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch document'
+      error: 'Failed to fetch document: ' + error.message
     });
   }
 });
 
-// Delete document
+// Delete a document
 router.delete('/:id', protect, async (req, res) => {
   try {
-    const document = await Document.findOneAndDelete({
+    const document = await Document.findOne({
       _id: req.params.id,
       user: req.user.id
     });
@@ -147,14 +179,17 @@ router.delete('/:id', protect, async (req, res) => {
       });
     }
 
-    res.json({
+    await Document.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
       success: true,
       message: 'Document deleted successfully'
     });
   } catch (error) {
+    console.error('❌ Delete document error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to delete document'
+      error: 'Failed to delete document: ' + error.message
     });
   }
 });

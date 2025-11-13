@@ -18,6 +18,7 @@ const DocumentList = ({ user, refresh }) => {
       const result = await documentService.getMyDocuments();
       if (result.success) {
         setDocuments(result.documents);
+        // console.log(result.documents)
       } else {
         setError(result.error);
       }
