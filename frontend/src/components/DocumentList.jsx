@@ -159,7 +159,7 @@ const DocumentList = ({ user, refresh }) => {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredDocuments.map((document, index) => (
-                <tr key={document._id} className="hover:bg-gray-50 transition-colors">
+                <tr key={document.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 bg-${getFileIconColor(index)}-50 rounded-lg flex items-center justify-center flex-shrink-0`}>
