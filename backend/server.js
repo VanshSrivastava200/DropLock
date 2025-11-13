@@ -17,7 +17,8 @@ app.use((req, res, next) => {
   console.log(`📨 ${req.method} ${req.originalUrl}`);
   next();
 });
-
+// Add this with your other routes
+app.use('/api/vc', require('./routes/vc'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

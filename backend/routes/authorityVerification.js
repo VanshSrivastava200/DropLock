@@ -3,8 +3,11 @@ const crypto = require('crypto');
 const router = express.Router();
 const Document = require('../models/Document');
 const Authority = require('../models/Authority');
+const VerifiableCredential = require('../models/VerifiableCredential');
+const User = require('../models/User');
 const { authorityProtect } = require('../middleware/authorityAuth');
 const { calculateFileHash, verifyHashMatch } = require('../utils/hashUtils');
+const VCService = require('../utils/vcService');
 
 // Get authority dashboard statistics
 router.get('/stats', authorityProtect, async (req, res) => {
@@ -154,7 +157,7 @@ router.get('/verification-history', authorityProtect, async (req, res) => {
   }
 });
 
-// Verify document by comparing hashes
+// Verify document by comparing hashes and generate VC
 router.post('/verify/:documentId', authorityProtect, express.raw({
   type: '*/*',
   limit: '10mb'
@@ -182,7 +185,7 @@ router.post('/verify/:documentId', authorityProtect, express.raw({
     const document = await Document.findOne({
       _id: documentId,
       documentType: authority.department
-    });
+    }).populate('user');
 
     if (!document) {
       return res.status(404).json({
@@ -199,7 +202,6 @@ router.post('/verify/:documentId', authorityProtect, express.raw({
     }
 
     const authorityDocumentHash = calculateFileHash(originalDocumentBuffer);
-
     const isHashMatch = verifyHashMatch(document.documentHash, authorityDocumentHash);
 
     if (isHashMatch) {
@@ -210,7 +212,23 @@ router.post('/verify/:documentId', authorityProtect, express.raw({
       document.verifiedAt = new Date();
       document.verificationHash = authorityDocumentHash;
 
+      // Generate Verifiable Credential
+      const vcData = await VCService.generateDocumentVC(document, authority, document.user);
+      
+      // Save VC to database
+      const verifiableCredential = await VerifiableCredential.create({
+        ...vcData,
+        document: document._id,
+        user: document.user._id,
+        authority: authority._id,
+        expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year expiry
+      });
+
+      // Link VC to document
+      document.verifiableCredential = verifiableCredential._id;
       await document.save();
+
+      console.log(`✅ Document verified and VC created: ${verifiableCredential.id}`);
 
       res.json({
         success: true,
@@ -222,6 +240,11 @@ router.post('/verify/:documentId', authorityProtect, express.raw({
           isVerified: document.isVerified,
           verifiedAt: document.verifiedAt,
           verifiedBy: authority.fullName
+        },
+        verifiableCredential: {
+          id: verifiableCredential.id,
+          issuanceDate: verifiableCredential.issuanceDate,
+          qrCodeData: VCService.generateQRCodeData(vcData)
         }
       });
     } else {
@@ -239,9 +262,87 @@ router.post('/verify/:documentId', authorityProtect, express.raw({
       });
     }
   } catch (error) {
+    console.error('❌ Verification failed:', error);
     res.status(500).json({
       success: false,
       error: 'Verification failed: ' + error.message
+    });
+  }
+});
+
+// Get authority's issued VCs
+router.get('/my-issued-vcs', authorityProtect, async (req, res) => {
+  try {
+    const vcs = await VerifiableCredential.find({ 
+      authority: req.user.id 
+    })
+    .populate('document', 'fileName documentType fileSize')
+    .populate('user', 'username email did')
+    .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: vcs.length,
+      verifiableCredentials: vcs.map(vc => ({
+        id: vc.id,
+        issuanceDate: vc.issuanceDate,
+        document: {
+          fileName: vc.document.fileName,
+          documentType: vc.document.documentType,
+          fileSize: vc.document.fileSize
+        },
+        user: {
+          username: vc.user.username,
+          email: vc.user.email,
+          did: vc.user.did
+        },
+        status: vc.status,
+        expiryDate: vc.expiryDate
+      }))
+    });
+  } catch (error) {
+    console.error('❌ Get issued VCs error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch issued verifiable credentials'
+    });
+  }
+});
+
+// Revoke a VC (authority can revoke their own issued VCs)
+router.post('/revoke-vc/:vcId', authorityProtect, async (req, res) => {
+  try {
+    const vc = await VerifiableCredential.findOne({
+      id: req.params.vcId,
+      authority: req.user.id
+    });
+
+    if (!vc) {
+      return res.status(404).json({
+        success: false,
+        error: 'Verifiable Credential not found or not authorized'
+      });
+    }
+
+    vc.status = 'revoked';
+    vc.revokedAt = new Date();
+    await vc.save();
+
+    // Also update the linked document status
+    await Document.findByIdAndUpdate(vc.document, {
+      status: 'revoked',
+      isVerified: false
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Verifiable Credential revoked successfully'
+    });
+  } catch (error) {
+    console.error('❌ Revoke VC error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to revoke verifiable credential'
     });
   }
 });

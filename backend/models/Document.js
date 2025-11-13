@@ -65,7 +65,11 @@ const documentSchema = new mongoose.Schema({
   metadata: {
     type: Map,
     of: String
-  }
+  },
+   verifiableCredential: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'VerifiableCredential'
+  },
 }, {
   timestamps: true
 });
