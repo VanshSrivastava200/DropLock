@@ -16,6 +16,7 @@ const DocumentList = ({ user, refresh }) => {
       const result = await documentService.getMyDocuments();
       if (result.success) {
         setDocuments(result.documents);
+        // console.log(result.documents)
       } else {
         setError(result.error);
       }
@@ -80,7 +81,7 @@ const DocumentList = ({ user, refresh }) => {
       ) : (
         <div className="space-y-4">
           {documents.map((document) => (
-            <div key={document._id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+            <div key={document.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg">{document.fileName}</h3>

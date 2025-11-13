@@ -18,7 +18,7 @@ const Dashboard = ({ user }) => {
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Welcome to DigiLocker, {user.username}!</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Welcome to DropLock, {user.username}!</h1>
                 <p className="text-gray-600 mt-2">
                   Your DID: <code className="bg-gray-100 px-2 py-1 rounded text-sm">{user.did}</code>
                 </p>

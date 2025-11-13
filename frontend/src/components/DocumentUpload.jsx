@@ -39,8 +39,9 @@ const DocumentUpload = ({ user, onUploadSuccess }) => {
     setSuccess('');
 
     try {
+      // Create FormData with the original file (don't convert to base64)
       const formData = new FormData();
-      formData.append('document', file);
+      formData.append('document', file); // Send original file
       formData.append('documentType', documentType);
       formData.append('description', description);
 
@@ -66,6 +67,7 @@ const DocumentUpload = ({ user, onUploadSuccess }) => {
     }
   };
 
+  // Rest of the component remains the same...
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
       <h2 className="text-xl font-semibold mb-4">Upload Document</h2>

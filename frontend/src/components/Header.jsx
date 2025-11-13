@@ -7,7 +7,7 @@ const Header = ({ user, onLogout }) => {
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
             <div className="shrink-0">
-              <h1 className="text-2xl font-bold text-gray-900">DigiLocker</h1>
+              <h1 className="text-2xl font-bold text-gray-900">DropLock</h1>
             </div>
           </div>
 
